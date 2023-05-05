@@ -18,17 +18,26 @@ public class MixingOfWaitsForLocatingElementWithAqualityTest {
 
     @Test
     public void mixingWaitsForLocatingElement() {
-        AqualityServices.getBrowser().setImplicitWaitTimeout(Duration.ofSeconds(2));
+        AqualityServices.getBrowser().setImplicitWaitTimeout(Duration.ofSeconds(5));
 
-        WebDriverWait wait = new WebDriverWait(AqualityServices.getBrowser().getDriver(), Duration.ofSeconds(20));
-        wait.pollingEvery(Duration.ofSeconds(6));
+        WebDriverWait wait = new WebDriverWait(AqualityServices.getBrowser().getDriver(), Duration.ofSeconds(10));
+//        wait.pollingEvery(Duration.ofSeconds(6));
 
         start = LocalDateTime.now();
         System.out.println("Wait starts at: " + start);
 
         prev = start;
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("SomeWrongId")));
+            wait.until(driver -> {
+                LocalDateTime now = LocalDateTime.now();
+                System.out.println(now + ", " +
+                        "interval: " + DateTimeUtils.calculateDuration(prev, now) + ", " +
+                        "since start: " + DateTimeUtils.calculateDuration(start, now));
+                prev = now;
+                // Implicit wait will be applicable here
+                return driver.findElement(By.id("SomeWrongId"));
+            });
+//            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("SomeWrongId")));
         } catch (Exception e) {
             end = LocalDateTime.now();
             System.out.println("Wait ends at: " + end);
