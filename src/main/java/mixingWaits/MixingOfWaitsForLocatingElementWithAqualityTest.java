@@ -2,6 +2,7 @@ package mixingWaits;
 
 import aquality.selenium.browser.AqualityServices;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -27,15 +28,7 @@ public class MixingOfWaitsForLocatingElementWithAqualityTest {
 
         prev = start;
         try {
-            wait.until(driver -> {
-                LocalDateTime now = LocalDateTime.now();
-                System.out.println(now + ", " +
-                        "interval: " + DateTimeUtils.calculateDuration(prev, now) + ", " +
-                        "since start: " + DateTimeUtils.calculateDuration(start, now));
-                prev = now;
-                // Implicit wait will be applicable here
-                return driver.findElement(By.id("SomeWrongId"));
-            });
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("SomeWrongId")));
         } catch (Exception e) {
             end = LocalDateTime.now();
             System.out.println("Wait ends at: " + end);
