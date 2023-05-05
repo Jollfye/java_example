@@ -26,15 +26,21 @@ public class MixingOfWaitsForLocatingElementWithAqualityTest {
         System.out.println("Wait starts at: " + start);
 
         prev = start;
-        wait.until(driver -> {
-            LocalDateTime now = LocalDateTime.now();
-            System.out.println(now + ", " +
-                    "interval: " + DateTimeUtils.calculateDuration(prev, now) + ", " +
-                    "since start: " + DateTimeUtils.calculateDuration(start, now));
-            prev = now;
-            // Implicit wait will be applicable here
-            return driver.findElement(By.id("SomeWrongId"));
-        });
+        try {
+            wait.until(driver -> {
+                LocalDateTime now = LocalDateTime.now();
+                System.out.println(now + ", " +
+                        "interval: " + DateTimeUtils.calculateDuration(prev, now) + ", " +
+                        "since start: " + DateTimeUtils.calculateDuration(start, now));
+                prev = now;
+                // Implicit wait will be applicable here
+                return driver.findElement(By.id("SomeWrongId"));
+            });
+        } catch (Exception e) {
+            end = LocalDateTime.now();
+            System.out.println("Wait ends at: " + end);
+            System.out.println("Duration: " + DateTimeUtils.calculateDuration(start, end));
+        }
     }
 
     @BeforeMethod
@@ -44,9 +50,6 @@ public class MixingOfWaitsForLocatingElementWithAqualityTest {
 
     @AfterMethod
     public void tearDown() {
-        end = LocalDateTime.now();
-        System.out.println("Wait ends at: " + end);
-        System.out.println("Duration: " + DateTimeUtils.calculateDuration(start, end));
         if (AqualityServices.isBrowserStarted()) {
             AqualityServices.getBrowser().quit();
         }
